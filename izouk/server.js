@@ -44,6 +44,11 @@ function init(app, callback) {
   
   app.get('*', NOTFOUND);
   
+  process.on('uncaughtException', function (err) {
+    console.log('Caught exception: ' + err);
+    dbClient.destroy();
+  });
+  
   callback(app);
 }
 
@@ -56,7 +61,6 @@ init(app, function (app) {
   app.listen(config.port);
   console.log('Starting server @ http://127.0.0.1:'+config.port);
 });
-
 
 //// HTTP SPECS & DEFINES
 //var http_port = 81; // node / apps port
