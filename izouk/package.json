@@ -1,0 +1,19 @@
+{
+  "author": "Jackey <397420507@qq.com>",
+  "name": "izouk",
+  "description": "izouk is a services provider for iphone.",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jackey/services.git"
+  },
+  "main": "index.js",
+  "engines": {
+    "node": "~v0.4.10"
+  },
+  "dependencies": {
+    "express": "2.4.4",
+    "mysql": "0.9.3"
+  },
+  "devDependencies": {}
+}
