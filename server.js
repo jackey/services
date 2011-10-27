@@ -21,6 +21,10 @@ function init(app, callback) {
     res.send('hello');
   });
   
+  /**
+   * GET method.
+   * To fetch/query data from database.
+   */
   app.get(/^\/server(?:\/([^\/]+))?(?:\/([^\/]+))?/, function (req, res, next) {
     var query = require('url').parse(req.url, true).query;
     var controllerName = 'profile', actionName = 'index'; // Default module and action;
@@ -34,12 +38,32 @@ function init(app, callback) {
       res.send('Not found controller :' + controllerName);
     }
     if (controller && (actionName in controller)) {
-      controller[actionName](req, res, query, dbClient);
+      controller[actionName](req, res, dbClient, query);
     }
     else {
-      res.send('Controller ' + controllerName + " not defined action :" + actionName);
+      res.send({error: 'Controller ' + controllerName + " not defined action :" + actionName});
     }
-    
+  });
+  
+  /**
+   * POST method.
+   * To Edit/Add data to database.
+   */
+  app.post(/^\/server(?:\/([^\/]+))?(?:\/([^\/]+))?/, function (req, res, next) {
+    var data = req.body;
+    var module = 'profile', action = 'index';
+    if (typeof req.params[0] != 'undefined') module = req.params[0];
+    if (typeof req.params[1] != 'undefined') action = req.params[1];
+    var controller = null;
+    try {
+      controller = require('./lib/' + module);
+    }
+    catch (err) {
+      res.send({error: 'Not found controller: ' + module});
+    }
+    if (controller != null && (action in controller)) {
+      controller[action](req, res, dbClient, data);
+    }
   });
   
   app.get('*', NOTFOUND);
@@ -61,6 +85,23 @@ init(app, function (app) {
   app.listen(config.port);
   console.log('Starting server @ http://127.0.0.1:'+config.port);
 });
+
+function isEmpty(value) {
+  var emptyArray = isArray(value) && !value.length;
+  var emptyObject = false;
+  if (isObject(value)) {
+    for (var p in value) emptyObject = true;
+  }
+  return emptyArray || emptyObject || value == null; 
+}
+
+function isObject(value) {
+  return !!value && !value.tagName && Object.prototype.toString.call(value) === '[object Object]';
+}
+
+function isArray(array) {
+  return Object.prototype.toString.apply(array) === '[object Array]';
+}
 
 //// HTTP SPECS & DEFINES
 //var http_port = 81; // node / apps port
