@@ -25,7 +25,7 @@ function init(app, callback) {
    * GET method.
    * To fetch/query data from database.
    */
-  app.get(/^(?:\/([^\/]+))?(?:\/([^\/]+))?/, function (req, res, next) {
+  app.get(new RegExp('^\/'+config.api_key+'(?:\/([^\/]+))?(?:\/([^\/]+))?'), function (req, res, next) {
     var query = require('url').parse(req.url, true).query;
     var controllerName = 'profile', actionName = 'index'; // Default module and action;
     if (typeof req.params[0] != 'undefined') controllerName = req.params[0];
@@ -49,7 +49,7 @@ function init(app, callback) {
    * POST method.
    * To Edit/Add data to database.
    */
-  app.post(/^(?:\/([^\/]+))?(?:\/([^\/]+))?/, function (req, res, next) {
+  app.post(new RegExp('^\/'+config.api_key+'(?:\/([^\/]+))?(?:\/([^\/]+))?'), function (req, res, next) {
     var data = req.body;
     var module = 'profile', action = 'index';
     if (typeof req.params[0] != 'undefined') module = req.params[0];
