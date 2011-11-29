@@ -18,7 +18,7 @@ function init(app, callback) {
   dbClient.query('USE ' + config.db);
   
   app.get('/', function (req, res, next) {
-    res.send('hello');
+    res.send({});
   });
   
   /**
