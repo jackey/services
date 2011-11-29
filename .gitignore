@@ -1,5 +1,5 @@
 .*
 !.gitignore
 /docs
-
+izouk.sql
 /node_modules

@@ -2,7 +2,9 @@
 var express = require('express'),
     config = require('./config.js'),
     mysql = require('mysql'),
-    route = require('./lib/route.js');
+    route = require('./lib/route.js'),
+    formidable = require('formidable'),
+    sys = require('sys');
 
 function init(app, callback) {
   // Use middleware;
@@ -51,7 +53,7 @@ function init(app, callback) {
    */
   app.post(new RegExp('^\/'+config.api_key+'(?:\/([^\/]+))?(?:\/([^\/]+))?'), function (req, res, next) {
     var data = req.body;
-    var module = 'profile', action = 'index';
+    var module = 'profile', action = 'index'; // Default profile
     if (typeof req.params[0] != 'undefined') module = req.params[0];
     if (typeof req.params[1] != 'undefined') action = req.params[1];
     var controller = null;
@@ -63,6 +65,24 @@ function init(app, callback) {
     }
     if (controller != null && (action in controller)) {
       controller[action](req, res, dbClient, data);
+    }
+  });
+  
+  app.get('/upload-image', function (req, res) {
+    if (req.form) {
+//      req.form.complete(function (err, fields, files) {
+//        res.send(fields);
+//      });
+    }
+    else {
+   // show a file upload form
+      res.writeHead(200, {'content-type': 'text/html'});
+      res.end(
+        '<form action="/71a18e061132b7a6ab9495aa9ba40264/profile/addmedia" enctype="multipart/form-data" method="post">'+
+        '<input type="text" name="title"><br>'+
+        '<input type="file" name="upload" multiple="multiple"><br>'+
+        '<input type="submit" value="Upload">'+
+        '</form>');
     }
   });
   
