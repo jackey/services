@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "express": "2.4.4",
-    "mysql": "0.9.3",
-    "formidable": ">= 0.9.3"
+    "mysql-pool": ">=0.2.2",
+    "mysql": "0.9.3"
   },
   "devDependencies": {}
 }

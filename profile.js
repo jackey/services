@@ -243,81 +243,99 @@ profile.prototype = {
   'addmedia' :   function(req, res, db, query) {
 
 			console.log('INCOMING MEDIA'); // CONSOLE
+
 			query || (query = {});
+
 			var fs = require('fs');
-			var path = require('path');
+
 
 			var form = formiable.IncomingForm();
 			form.keepExtensions = true; // Check full API at [here](https://github.com/felixge/node-formidable)
 			form.uploadDir = config.tmp_files_path; // NEW DEFAULT PATH
 			
 			form.parse(req, function (err, fields, files) {
-	      var userfiles = config.user_files_path+'/'+fields.uid;
-        var now  = parseInt((new Date()) /1000); 
-			  var thumbnail = files.thumbimg;
-			  var largeimg = files.largeimg;
-        var largefilename = userfiles + "/" + fields.uid+'_large_'+now+'.'+config.user_img_ext; // string
-        var thumbfilename = userfiles + "/" + fields.uid+'_thumb_'+now+'.'+config.user_img_ext; // string
-        
-        
-        // rename tmp file helper function.
-        function renameTmp(cb) {
-          cb || (cb = function () {}); // param.
-          fs.rename(thumbnail.path, thumbfilename, function (err) {
-            if (err) {
-              console.log('rename err');
-            }
-            else {
-              fs.rename(largeimg.path, largefilename, function (err) {
-                if (err) {
-                  console.log(err);
-                  // callback.
-                  cb(err);
-                }
-                else {
-                  // callback.
-                  cb();
-                }
-              });
-            }
-          });
-        }
-        
-        // step 1. mkdir folder for store new img; we don't use asyn function because it will cause nest callback.
-        // Maybe we don't need fields.uid for folder location.that means remove fields.uid from userfiles.
-        if (!path.existsSync(userfiles)) {
-          fs.mkdir(userfiles, 0777, function (err) {
-            if (err) {
-              console.log(err);
-            }
-            else {
-              // Step 2. rename the files.
-             // We don't need pass params to this function, because it can get params from current context;
-              renameTmp(function (err) {
-                if (err) {
-                  
-                }
-                else {
-                  // step 3.
-                  //no error, we can insert data to mysql database now;
-                }
-              });
-            }
-          });
-        }
-        else {
-          // Step 2.
-          renameTmp(function (err) {
-            if (err) {
-              
-            }
-            else {
-              // Step3.
-              // no error, we can insert data to mysql
-            }
-          });
-        }
-			});
+							
+							console.log(files);
+							console.log(fields);
+							
+							// ONLY UID
+							if (typeof fields.uid != 'undefined' && true) {
+									
+								
+									var userfiles = config.user_files_path+'/'+fields.uid;
+									var doit = 0;
+
+									console.log('WITH UID > '+fields.uid); // CONSOLE
+									
+								
+									// RENAME TO CORRECT FILE NAME & PATH
+									function moveit() {
+											
+											var now  = parseInt((new Date()) /1000); 
+											
+											// FILE OBBJ & NAMING
+											var largeimg = files.largeimg; // obj
+											var thumbimg = files.thumbimg; // obj
+											var largefilename = fields.uid+'_large_'+now+'.'+config.user_img_ext; // string
+											var thumbfilename = fields.uid+'_thumb_'+now+'.'+config.user_img_ext; // string
+											
+											// RENAME LARGE IMG
+											fs.rename(largeimg.path, userfiles+'/'+largefilename, function (err) {
+															
+															if (err) { 	console.log(err); } 
+															else {
+
+																	console.log('LARGE OK : '+userfiles+'/'+largefilename); // CONSOLE
+
+																	// RENAME THUMB IMG
+																	fs.rename(thumbimg.path, userfiles+'/'+thumbfilename, function (err) {
+																					
+																					if (err) { 	console.log(err); }
+																					else {
+
+																							console.log('THUMB OK : '+userfiles+'/'+thumbfilename); // CONSOLE
+
+																							// INSERT IN DB
+																							var sql  = 'INSERT INTO users_media (uid,thumbimg,largeimg,pos,cdate) VALUES (?, ?, ?, ?,now())';
+																							var data = [fields.uid, thumbfilename, largefilename, fields.pos];
+																							
+																							console.log(sql); // CONSOLE
+																							console.log(data); // CONSOLE
+
+																							return db.query(sql, data, function (err, result) {
+																											
+																											if (err) {  res.send({error: 'Insert USER IMG error'}); }
+																											else {
+
+																													clientret = {
+																															uid:fields.uid,
+																															umid:result.insertId,
+																															thumbimg:thumbfilename,
+																															largeimg:largefilename,
+																															pos:fields.pos,
+																													};
+
+																													console.log(clientret);
+
+																													// SEND TO CLIENT APPS
+																													res.send(clientret);	
+
+																											}
+																									});	
+																					}
+																					
+																			});
+															}
+															
+													});
+									}
+
+
+									// CHECK IF USER DIR EXIST 
+
+							}
+					});
+			
   },
 	
   // GET ALL USER IMAGES

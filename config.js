@@ -1,8 +1,18 @@
+/*
+ * CONFIG ITEMS
+ */
 module.exports = {
-    port: 3000,
+		port: 88,
+		api_key :  '71a18e061132b7a6ab9495aa9ba40264',
     db: 'izouk',
-    dbUser: 'root',
-    dbPass: 'admin',
+    dbUser: 'adminzouk',
+    dbPass: '1z0uk!#',
     dbHost: 'localhost',
-    api_key: '71a18e061132b7a6ab9495aa9ba40264', // !winkr#2012
+		misc_files_path: '/var/app/winkr/files/misc',
+		user_files_path: '/var/app/winkr/files/users',
+		place_files_path: '/var/app/winkr/files/places',
+		tmp_files_path: '/var/app/winkr/files/tmp',
+		user_img_ext: 'jpg',
+		place_img_ext: 'jpg',
+		http_url : 'http://www.izouk.fr',
 };
