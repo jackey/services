@@ -2,7 +2,7 @@
  * CONFIG ITEMS
  */
 module.exports = {
-		port: 88,
+		port: 3002,
 		api_key :  '71a18e061132b7a6ab9495aa9ba40264',
     db: 'izouk',
     dbUser: 'adminzouk',

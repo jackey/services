@@ -123,10 +123,6 @@ function init(app, callback) {
 	
   app.get('*', NOTFOUND);
   
-  process.on('uncaughtException', function (err) {
-					console.log('Caught exception: ' + err);
-			});
-  
   callback(app);
 }
 
@@ -135,6 +131,12 @@ function NOTFOUND(req, res, next) {
 }
 
 var app = express.createServer();
+
+
+process.on('uncaughtException', function (err) {
+  console.error(err.stack);
+});
+
 init(app, function (app) {
 				app.listen(config.port);
 				console.log('Starting server @ http://127.0.0.1:'+config.port);
